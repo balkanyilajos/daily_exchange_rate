@@ -26,7 +26,23 @@ function RunPython() {
     done
 }
 
+function Help() {
+    echo -e "Usage: $0 <currency> [<file_or_date> ...]\n"
+    echo "Arguments:"
+    echo "  <currency>           The currency to be converted."
+    echo "  <file> or <date>     Additional arguments which can be filenames or dates."
+    echo -e "\nOptions:"
+    echo "  --help               Show this help message and exit."
+}
+
 function CheckArgs() {
+    for arg in "$@"; do
+        if [ "$arg" == "--help" ]; then
+            Help
+            exit 0
+        fi
+    done
+
     if [ "$#" -lt 1 ]; then
         echo "ERROR: No currency provided."
         echo "Usage: $0 <currency> [<file> | <date> ...]"
