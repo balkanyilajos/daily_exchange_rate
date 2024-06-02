@@ -21,9 +21,26 @@ function Cleanup() {
 }
 
 function RunPython() {
-    python3 ./src/daily_exchange_rate.py $@
+    for value in $(python3 ./src/daily_exchange_rate.py $@); do
+        echo $value
+    done
 }
 
+function CheckArgs() {
+    if [ "$#" -lt 1 ]; then
+        echo "ERROR: No currency provided."
+        echo "Usage: $0 <currency> [<file> | <date> ...]"
+        exit 1
+    fi
+
+    if [ $# -lt 2 ]; then
+        echo "ERROR: No files or dates provided."
+        echo "Usage: $0 <currency> [<file> | <date> ...]"
+        exit 1
+    fi
+}
+
+CheckArgs $@
 CreateVenv
 RunPython $@
 DeactivateVenv
