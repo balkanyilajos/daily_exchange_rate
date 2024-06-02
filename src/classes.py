@@ -1,10 +1,6 @@
-from pathlib import Path
 
 class mnbConsts:
     dateRow = "Dátum/ISO"
-    hufRow = "HUF"
-    usdRow = "USD"
-    eurRow = "EUR"
 
     excelFolderPath = "./files"
 
