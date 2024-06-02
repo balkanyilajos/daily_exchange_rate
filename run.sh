@@ -1,25 +1,30 @@
-VENV_PATH=./venv
+#!/bin/bash
 
-function createVenv() {
+set -e -u
+
+VENV_PATH=./venv
+SRC_PATH=./src
+
+function CreateVenv() {
     python3 -m venv ${VENV_PATH}
     source venv/bin/activate
 
     pip3 install -q -r requirements.txt
 }
 
-function deactivateVenv() {
+function DeactivateVenv() {
     deactivate
 }
 
-function cleanup() {
+function Cleanup() {
     if [ -d ${VENV_PATH} ]; then rm -rf ${VENV_PATH}; fi
 }
 
-function run() {
-    python3 ./daily_exchange_rate.py 2023.06.06
+function RunPython() {
+    python3 ./src/daily_exchange_rate.py $@
 }
 
-createVenv
-run
-deactivateVenv
-#cleanup
+CreateVenv
+RunPython $@
+DeactivateVenv
+#Cleanup
