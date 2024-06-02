@@ -3,7 +3,7 @@
 set -e -u
 
 VENV_PATH=./venv
-SRC_PATH=./src
+EXCEL_PATH=./files
 
 function CreateVenv() {
     python3 -m venv ${VENV_PATH}
@@ -17,12 +17,14 @@ function DeactivateVenv() {
 }
 
 function Cleanup() {
-    if [ -d ${VENV_PATH} ]; then rm -rf ${VENV_PATH}; fi
+    # if [ -d ${VENV_PATH} ]; then rm -rf ${VENV_PATH}; fi
+    # if [ -d ./src/__pycache__ ]; then rm -rf ./src/__pycache__; fi
+    if [ -d ${EXCEL_PATH} ]; then rm -rf ${EXCEL_PATH}; fi
 }
 
 function RunPython() {
     for value in $(python3 ./src/daily_exchange_rate.py $@); do
-        echo $value
+        echo ${value}
     done
 }
 
@@ -36,22 +38,22 @@ function Help() {
 }
 
 function CheckArgs() {
-    for arg in "$@"; do
-        if [ "$arg" == "--help" ]; then
+    for arg in $@; do
+        if [ ${arg} == --help ]; then
             Help
             exit 0
         fi
     done
 
-    if [ "$#" -lt 1 ]; then
+    if [ $# -lt 1 ]; then
         echo "ERROR: No currency provided."
-        echo "Usage: $0 <currency> [<file> | <date> ...]"
+        echo "Usage: ${0} <currency> [<file> | <date> ...]"
         exit 1
     fi
 
     if [ $# -lt 2 ]; then
         echo "ERROR: No files or dates provided."
-        echo "Usage: $0 <currency> [<file> | <date> ...]"
+        echo "Usage: ${0} <currency> [<file> | <date> ...]"
         exit 1
     fi
 }
@@ -60,4 +62,4 @@ CheckArgs $@
 CreateVenv
 RunPython $@
 DeactivateVenv
-#Cleanup
+Cleanup

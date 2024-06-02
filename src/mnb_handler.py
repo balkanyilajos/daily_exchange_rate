@@ -10,8 +10,10 @@ from classes import mnbConsts
 def downloadExcel(year: int = None, deletePreviousFiles = False):
     if deletePreviousFiles and exists(mnbConsts.excelFolderPath):
         rmtree(mnbConsts.excelFolderPath)
+    
+    if not exists(mnbConsts.excelFolderPath):
         makedirs(mnbConsts.excelFolderPath)
-        
+
     urlretrieve(mnbConsts.getUrl(year), mnbConsts.getExcelPath(year))
 
 
