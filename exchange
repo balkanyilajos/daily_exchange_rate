@@ -23,7 +23,7 @@ function Cleanup() {
 }
 
 function RunPython() {
-    for value in $(python3 ./src/daily_exchange_rate.py $@); do
+    for value in $(python3 ./daily_exchange_rate.py $@); do
         echo ${value}
     done
 }
