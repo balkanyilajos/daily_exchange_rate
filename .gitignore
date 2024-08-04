@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 
 # virtual environment
-venv
+venv/
 
 # temporary files
-files
+excel_files/
