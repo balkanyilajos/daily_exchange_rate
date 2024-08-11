@@ -6,4 +6,4 @@ __pycache__/
 venv/
 
 # temporary files
-excel_files/
+tmp_mnbrate_excel_folder/

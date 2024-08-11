@@ -11,56 +11,83 @@ from typing import Union, List, Generator
 
 _date_row = "Dátum/ISO"
 _unit_row = "Egység"
+_excels_path = "./tmp_mnbrate_excel_folder"
 
-def get_excel_path(excel_folder_path: str, year: int = None) -> str:
+def get_excel_path(year: int = None, excels_path: str = None) -> str:
     ''' 
-    Return:
-        - Excel file path
+    Parameters
+    - excels_path is used to determine path from the root. \n
+      If it's None then default value will be _excels_path variable.
+    - year is used to determine path from the root and identify small mnb files. \n
+      If it's None then the function downloads data for all years. This can result a slow process.
+    Return
+    - Excel file path
     
     The function doesn't guarantee that the file exists. 
+    If excels_path is None, it's default value will be _excels_path variable.
     '''
+    if excels_path is None: excels_path = _excels_path
+    today = datetime.today().strftime('%Y-%m-%d')
+
     if year:
-        return f"{excel_folder_path}/{year}.xlsx"
+        return f"{excels_path}/{year}_{today}.xlsx"
     else:
-        return f"{excel_folder_path}/all.xlsx"
+        return f"{excels_path}/all_{today}.xlsx"
 
 def get_excel_url(year: int = None) -> str:
     '''
-    Return:
-        - Excel URL from MNB
+    Parameters.
+    - year is used to determine path from the root and identify small mnb files. \n
+      If it's None then the function downloads data for all years. This can result a slow process.
+    Return
+    - Excel URL from MNB
     '''
     src = "https://www.mnb.hu/arfolyam-letoltes"
     return f"{src}/?year={year}" if year else src
 
-def download_excel(excel_folder_path: str, year: int = None, delete_previous_files = False):
+def download_excel(year: int = None, excels_path: str = None):
     '''
-    It downloads Excel file to excel_folder_path. Year variable is used for define the filename.
-    '''
-    if delete_previous_files and exists(excel_folder_path):
-        rmtree(excel_folder_path)
-    
-    makedirs(excel_folder_path, exist_ok=True)
-    if not exists(get_excel_path(excel_folder_path, year)):
-        urlretrieve(get_excel_url(year), get_excel_path(excel_folder_path, year))
+    It downloads Excel file to excels_path.
 
-def get_excel(excel_folder_path: str, year: int = None) -> DataFrame:
+    Parameters
+    - excels_path is used to determine path from the root. \n
+      If it's None then default value will be _excels_path variable.
+    - year is used to determine path from the root and identify small mnb files. \n
+      If it's None then the function downloads data for all years. This can result a slow process.
     '''
-    Return:
-        - Excel file content
+    if excels_path is None: excels_path = _excels_path
+    
+    makedirs(excels_path, exist_ok=True)
+    if not exists(get_excel_path(excels_path=excels_path, year=year)):
+        urlretrieve(get_excel_url(year), get_excel_path(excels_path=excels_path, year=year))
+
+def get_excel(year: int = None, excels_path: str = None) -> DataFrame:
+    '''
+    Parameters
+    - excels_path is used to determine path from the root. \n
+      If it's None then default value will be _excels_path variable.
+    - year is used to determine path from the root and identify small mnb files. \n
+      If it's None then the function downloads data for all years. This can result a slow process.
+    
+    Return
+    - Excel file content\n
+
     It downloads the excel file from the MNB's official website.
     '''
-    download_excel(excel_folder_path, year)
-    return read_excel(get_excel_path(excel_folder_path, year))
+    download_excel(year=year, excels_path=excels_path)
+    return read_excel(get_excel_path(year=year, excels_path=excels_path))
 
-def get_exchange_rate(excel: DataFrame, date: datetime, currency: str) -> float:
+def get_exchange_rate(date: datetime, currency: str, excel: DataFrame = None) -> float:
     '''
-    Return:
-        - Exchange rate from excel
+    Return
+    - Exchange rate from excel
     '''
+    if excel is None: excel = get_excel(year=date.year)
+
     unit_row = excel[excel[_date_row] == _unit_row]
     date_row = excel[excel[_date_row] == date]
 
-    assert not date_row.empty, f"ERROR: Date not found [{date.strftime('%Y-%m-%d')}]!"
+    assert not date_row.empty, f"ERROR: Date not found [{date.strftime(r'%Y-%m-%d')}]!"
     assert currency in unit_row, f"ERROR: No currency information [{currency}]!"
 
     exchange_rate = float(date_row[currency].values[0])
@@ -96,8 +123,8 @@ def _str_to_date(date: str, year_position=1, month_position=2, day_position=3) -
 
     return datetime(year, month, day)
 
-def cleanup(excel_folder_path):
-    rmtree(excel_folder_path)
+def cleanup():
+    rmtree(_excels_path)
 
 # Error handling
 def _usage_message() -> str:
@@ -124,12 +151,11 @@ def _check_argv():
 def main():
     _check_argv()
     currency = argv[1]
-    excel_folder_path = "./excel_files"
 
     for date in date_generator(*argv[2:]):
-        print(get_exchange_rate(get_excel(excel_folder_path, date.year), date, currency))
+        print(get_exchange_rate(date, currency))
 
-    cleanup(excel_folder_path)
+    cleanup()
 
 if __name__ == "__main__":
     main()

@@ -18,7 +18,7 @@ Egy olyan eszköz, amely az MNB (Magyar Nemzeti Bank) hivatalos oldaláról let�
 
 ## Futtatási Feltételek
 
-A program futtatásához Python interpreter, Python Venv, illetve Bash szükséges.
+A program futtatásához Python interpreter, Python Venv, illetve Linux Bash szükséges.
 
 ```sh
 sudo apt install -y python3
@@ -43,13 +43,13 @@ A program a következő argumentumokat fogadja:
 ### Példa használatára
 
 ```sh
-./exchange USD 2021-05-04 2024.02.04
+./exchange.sh USD 2021-05-04 2024.02.04
 ```
 
 ```sh
-./exchange EUR file1.txt file2.txt
+./exchange.sh EUR file1.txt file2.txt
 ```
 
 ```sh
-./exchange USD file1.txt 2021.05.04 file2.txt 2024.02.04
+./exchange.sh USD file1.txt 2021.05.04 file2.txt 2024.02.04
 ```
